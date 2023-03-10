@@ -1,10 +1,10 @@
 package db
 
 import (
+	"Backend-Project-NDL/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"project-NDL/config"
 )
 
 var db *sql.DB

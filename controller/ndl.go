@@ -1,11 +1,21 @@
 package controllers
 
 import (
+	"Backend-Project-NDL/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"project-NDL/models"
 	"strconv"
 )
+
+func ReadEXCEL(c echo.Context) error {
+	result, err := models.Read_EXCEL(c.Response(), c.Request())
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
 
 func InputStock(c echo.Context) error {
 	ws_no := c.FormValue("ws_no")
@@ -23,21 +33,43 @@ func InputStock(c echo.Context) error {
 	up := c.FormValue("up")
 	repeat_ndl := c.FormValue("repeat_ndl")
 	toleransi := c.FormValue("toleransi")
-	order_ndl := c.FormValue("job_done")
-	w_s_order := c.FormValue("durasi")
-	width := c.FormValue("analyzer_version")
-	lenght := c.FormValue("order_status")
-	gusset := c.FormValue("tambah_data_tanggal")
-	prod_size := c.FormValue("customer_delivery_date")
-	w := c.FormValue("job_done")
-	c_ndl := c.FormValue("durasi")
-	color := c.FormValue("analyzer_version")
-	layer := c.FormValue("up")
+	order_ndl := c.FormValue("order_ndl")
+	w_s_order := c.FormValue("w_s_order")
+	width := c.FormValue("width")
+	lenght := c.FormValue("lenght")
+	gusset := c.FormValue("gusset")
+	prod_size := c.FormValue("prod_size")
+	w := c.FormValue("w")
+	c_ndl := c.FormValue("c_ndl")
+	color := c.FormValue("color")
+	nama_layer := c.FormValue("layer")
+	layer_detail := c.FormValue("layer_detail")
+	width_layer := c.FormValue("width_layer")
+	rm := c.FormValue("rm")
+	diff := c.FormValue("diff")
+	lyr := c.FormValue("lyr")
+	ink := c.FormValue("ink")
+	adh := c.FormValue("adh")
+	total := c.FormValue("total")
+
+	dr, _ := strconv.Atoi(durasi)
+	r_ndl, _ := strconv.Atoi(repeat_ndl)
+	up_ndl, _ := strconv.Atoi(up)
+	t_ndl, _ := strconv.Atoi(toleransi)
+	w_s_ndl, _ := strconv.ParseFloat(w_s_order, 64)
+	width_ndl, _ := strconv.ParseFloat(width, 64)
+	lenght_ndl, _ := strconv.ParseFloat(lenght, 64)
+	gusset_ndl, _ := strconv.ParseFloat(gusset, 64)
+	p_s_ndl, _ := strconv.ParseFloat(prod_size, 64)
+	w_ndl, _ := strconv.ParseFloat(w, 64)
+	c_ndl_flt, _ := strconv.ParseFloat(c_ndl, 64)
+	color_ndl, _ := strconv.Atoi(color)
+	ink_ndl, _ := strconv.ParseFloat(ink, 64)
 
 	result, err := models.Input_NDL(ws_no, tambah_data_tanggal, customer_delivery_date,
-		job_done, durasi, analyzer_version, order_status, cylinder_status, gol, cust, item_name,
-		model, up, repeat_ndl, toleransi, order_ndl, w_s_order, width, lenght, gusset, prod_size, w,
-		c, color, layer)
+		job_done, dr, analyzer_version, order_status, cylinder_status, gol, cust, item_name,
+		model, up_ndl, r_ndl, t_ndl, order_ndl, w_s_ndl, width_ndl, lenght_ndl, gusset_ndl, p_s_ndl, w_ndl,
+		c_ndl_flt, color_ndl, nama_layer, layer_detail, width_layer, rm, diff, lyr, ink_ndl, adh, total)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -46,7 +78,7 @@ func InputStock(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func ReadStock(c echo.Context) error {
+/*func ReadStock(c echo.Context) error {
 	result, err := models.Read_Stock()
 
 	if err != nil {
@@ -54,7 +86,7 @@ func ReadStock(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, result)
-}
+}*/
 
 func UpdateStock(c echo.Context) error {
 	kode_stock := c.FormValue("kode_stock")

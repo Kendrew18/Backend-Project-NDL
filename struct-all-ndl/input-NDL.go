@@ -25,7 +25,6 @@ type Input_NDL struct {
 	W                      float64 `json:"w"`
 	C                      float64 `json:"c"`
 	Color                  int     `json:"color"`
-	Layer                  string  `json:"layer"`
 }
 
 type Ws_no struct {
