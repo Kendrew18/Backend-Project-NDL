@@ -16,9 +16,12 @@ func Init() *echo.Echo {
 		return c.String(http.StatusOK, "Project-NDL")
 	})
 
-	e.POST("/read-excel", controllers.ReadEXCEL)
+	NDL := e.Group("/NDL")
 
-	e.POST("/input-ndl", controllers.InputNDL)
+	//NDL
+	NDL.POST("/read-excel", controllers.ReadEXCEL)
+
+	NDL.POST("/input-ndl", controllers.InputNDL)
 
 	return e
 }
