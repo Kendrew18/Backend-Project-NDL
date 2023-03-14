@@ -18,5 +18,7 @@ func Init() *echo.Echo {
 
 	e.POST("/read-excel", controllers.ReadEXCEL)
 
+	e.POST("/input-ndl", controllers.InputNDL)
+
 	return e
 }
