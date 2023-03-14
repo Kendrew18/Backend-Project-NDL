@@ -623,31 +623,6 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 	return res, nil
 }
 
-func Generate_Id_layer(L_cat string) int {
-	var obj str.Generate_Id
-
-	con := db.CreateCon()
-
-	sqlStatement := "SELECT layer" + L_cat + " FROM generate_id"
-
-	_ = con.QueryRow(sqlStatement).Scan(&obj.Id)
-
-	no := obj.Id
-	no = no + 1
-
-	sqlstatement := "UPDATE generate_id SET layer" + L_cat + "=?"
-
-	stmt, err := con.Prepare(sqlstatement)
-
-	if err != nil {
-		return -1
-	}
-
-	stmt.Exec(no)
-
-	return no
-}
-
 func Input_NDL(stat string) (Response, error) {
 	var res Response
 	var I_NDL str.Input_NDL
