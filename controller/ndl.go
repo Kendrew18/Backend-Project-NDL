@@ -29,15 +29,19 @@ func InputNDL(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-/*func ReadStock(c echo.Context) error {
-	result, err := models.Read_Stock()
+func ReadNDL(c echo.Context) error {
+	page := c.FormValue("page")
+
+	pg, _ := strconv.Atoi(page)
+
+	result, err := models.Read_NDL(pg)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, result)
-}*/
+}
 
 func UpdateStock(c echo.Context) error {
 	kode_stock := c.FormValue("kode_stock")

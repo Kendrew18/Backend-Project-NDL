@@ -38,3 +38,13 @@ type Read_NDL struct {
 	Adh_layer              []float64 `json:"adh_layer"`
 	Total_layer            float64   `json:"total_layer"`
 }
+
+type Layer struct {
+	Nama_layer   string  `json:"nama_layer"`
+	Layer_datail string  `json:"layer_datail1"`
+	Width_layer  float64 `json:"width_layer"`
+	Rm_layer     int     `json:"rm_layer"`
+	Diff_layer   float64 `json:"diff_layer"`
+	Lyr_layer    float64 `json:"lyr_layer"`
+	Adh_layer    float64 `json:"adh_layer"`
+}

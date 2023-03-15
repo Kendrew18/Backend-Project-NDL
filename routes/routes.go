@@ -23,5 +23,7 @@ func Init() *echo.Echo {
 
 	NDL.POST("/input-ndl", controllers.InputNDL)
 
+	NDL.GET("/NDL", controllers.ReadNDL)
+
 	return e
 }

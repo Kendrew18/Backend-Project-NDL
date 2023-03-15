@@ -30,3 +30,7 @@ type Input_NDL struct {
 type Ws_no struct {
 	Ws_no string `json:"ws_no"`
 }
+
+type Order struct {
+	Order string `json:"order"`
+}

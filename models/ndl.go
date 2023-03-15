@@ -681,6 +681,7 @@ func Input_NDL(stat string) (Response, error) {
 				}
 
 				if data2[8] != "" {
+					var ws str.Ws_no
 
 					date, _ := time.Parse("2-Jan-06", data2[0])
 					date_sql := date.Format("2006-01-02")
@@ -691,68 +692,99 @@ func Input_NDL(stat string) (Response, error) {
 					date3, _ := time.Parse("2-Jan-06", data2[2])
 					date_sql3 := date3.Format("2006-01-02")
 
-					sqlStatement := "INSERT INTO ndl_table (ws_no,tambah_data_tanggal,customer_delivery_date,job_done,durasi,analyzer_version,order_status,cylinder_status,gol,cust,item_name,model,up,repeat_ndl,toleransi,order_ndl,w_s_order,width,lenght_ndl,gusset,prod_size,w,c_ndl,color,total) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+					sqlStatement := "SELECT ws_no FROM ndl_table WHERE ws_no=?"
 
-					stmt, err := con.Prepare(sqlStatement)
+					_ = con.QueryRow(sqlStatement, data2[8]).Scan(&ws.Ws_no)
 
-					if err != nil {
-						return res, err
-					}
+					if ws.Ws_no == "" {
 
-					_, err = stmt.Exec(data2[8], date_sql, date_sql2, date_sql3, data2[3], data2[4], data2[5], data2[6], data2[7], data2[9], data2[10], data2[11], data2[12], data2[13], data2[14], data2[15], data2[16], data2[17], data2[18], data2[19], data2[20], data2[21], data2[22], data2[23], data2[24])
+						sqlStatement := "INSERT INTO ndl_table (ws_no,tambah_data_tanggal,customer_delivery_date,job_done,durasi,analyzer_version,order_status,cylinder_status,gol,cust,item_name,model,up,repeat_ndl,toleransi,order_ndl,w_s_order,width,lenght_ndl,gusset,prod_size,w,c_ndl,color,total) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
-					for j := 25; j < ln; j++ {
+						stmt, err := con.Prepare(sqlStatement)
 
-						fl_lyr := String_Separator_To_String(data2[j])
-
-						db_lyr := "layer" + string(fl_lyr[0][0])
-
-						if fl_lyr[0][0] == '1' {
-
-							sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,ink,adh) values(?,?,?,?,?,?,?,?,?)"
-
-							stmt, err = con.Prepare(sqlStatement)
-
-							if err != nil {
-								return res, err
-							}
-
-							ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
-
-							_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9], fl_lyr[10])
-
-						} else if fl_lyr[0][0] == '6' {
-
-							sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr) values(?,?,?,?,?,?,?)"
-
-							stmt, err = con.Prepare(sqlStatement)
-
-							if err != nil {
-								return res, err
-							}
-
-							ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
-
-							_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8])
-
-						} else {
-
-							sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,adh) values(?,?,?,?,?,?,?,?)"
-
-							stmt, err = con.Prepare(sqlStatement)
-
-							if err != nil {
-								return res, err
-							}
-
-							ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
-
-							_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9])
-
+						if err != nil {
+							return res, err
 						}
-					}
 
-					stmt.Close()
+						_, err = stmt.Exec(data2[8], date_sql, date_sql2, date_sql3, data2[3], data2[4], data2[5], data2[6], data2[7], data2[9], data2[10], data2[11], data2[12], data2[13], data2[14], data2[15], data2[16], data2[17], data2[18], data2[19], data2[20], data2[21], data2[22], data2[23], data2[24])
+
+						//Rekap
+						gl_rkp := ""
+						if data2[7] == "S" {
+							gl_rkp = "BBK"
+						} else {
+							gl_rkp = "LTU"
+						}
+
+						sqlStatement = "INSERT INTO rekap (ws_no,date_rekap,customer_name,item_name,order_rekap,ws_meter,plant,delivery_period,status_rekap) values(?,?,?,?,?,?,?,?,?)"
+
+						stmt, err = con.Prepare(sqlStatement)
+
+						if err != nil {
+							return res, err
+						}
+
+						ord := String_Separator_To_Int(data2[15])
+
+						_, err = stmt.Exec(data2[8], date_sql, data2[9], data2[10], ord[1], data2[17], gl_rkp, "", 0)
+
+						if err != nil {
+							return res, err
+						}
+
+						for j := 25; j < ln; j++ {
+
+							fl_lyr := String_Separator_To_String(data2[j])
+
+							db_lyr := "layer" + string(fl_lyr[0][0])
+
+							if fl_lyr[0][0] == '1' {
+
+								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,ink,adh) values(?,?,?,?,?,?,?,?,?)"
+
+								stmt, err = con.Prepare(sqlStatement)
+
+								if err != nil {
+									return res, err
+								}
+
+								ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
+
+								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9], fl_lyr[10])
+
+							} else if fl_lyr[0][0] == '6' {
+
+								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr) values(?,?,?,?,?,?,?)"
+
+								stmt, err = con.Prepare(sqlStatement)
+
+								if err != nil {
+									return res, err
+								}
+
+								ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
+
+								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8])
+
+							} else {
+
+								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,adh) values(?,?,?,?,?,?,?,?)"
+
+								stmt, err = con.Prepare(sqlStatement)
+
+								if err != nil {
+									return res, err
+								}
+
+								ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
+
+								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9])
+
+							}
+						}
+
+						stmt.Close()
+					}
 
 				}
 
@@ -766,7 +798,7 @@ func Input_NDL(stat string) (Response, error) {
 
 	}
 
-	_ = os.Remove("./uploads/rd.xlsx")
+	_ = os.Remove("./uploads/rd.txt")
 
 	res.Status = http.StatusOK
 	res.Message = "Sukses"
@@ -775,16 +807,19 @@ func Input_NDL(stat string) (Response, error) {
 	return res, nil
 }
 
-/*func Read_NDL() (Response, error) {
+func Read_NDL(page int) (Response, error) {
 	var res Response
 	var arr_Read_NDL []str.Read_NDL
-	var Read_NDL str.Read_NDL
 
 	con := db.CreateCon()
 
-	sqlStatement := "SELECT kode_stock,nama_barang,jumlah_barang,satuan_barang,harga_barang FROM stock ORDER BY co ASC"
+	limit := 50
 
-	rows, err := con.Query(sqlStatement)
+	offset := (limit * page) - limit
+
+	sqlStatement := "SELECT * FROM ndl_table ORDER BY ws_no ASC LIMIT ? OFFSET ?"
+
+	rows, err := con.Query(sqlStatement, limit, offset)
 
 	defer rows.Close()
 
@@ -792,26 +827,126 @@ func Input_NDL(stat string) (Response, error) {
 		return res, err
 	}
 
+	var temp str.Order
+
 	for rows.Next() {
-		err = rows.Scan(&invent.Kode_stock, &invent.Nama_barang, &invent.Jumlah_barang, &invent.Satuan_barang, &invent.Harga_barang)
+		var Rd_NDL str.Read_NDL
+		err = rows.Scan(&Rd_NDL.Ws_no, &Rd_NDL.Tambah_data_tanggal, &Rd_NDL.Customer_delivery_date,
+			&Rd_NDL.Job_done, &Rd_NDL.Durasi, &Rd_NDL.Analyzer_version, &Rd_NDL.Order_status,
+			&Rd_NDL.Cylider_status, &Rd_NDL.Gol, &Rd_NDL.Cust, &Rd_NDL.Item_name, &Rd_NDL.Model, &Rd_NDL.Up,
+			&Rd_NDL.Repeat_ndl, &Rd_NDL.Toleransi, &temp.Order, &Rd_NDL.W_s_order, &Rd_NDL.Width,
+			&Rd_NDL.Lenght, &Rd_NDL.Gusset, &Rd_NDL.Prod_size, &Rd_NDL.W, &Rd_NDL.C, &Rd_NDL.Color,
+			&Rd_NDL.Total_layer)
 		if err != nil {
 			return res, err
 		}
-		arr_invent = append(arr_invent, invent)
+
+		Rd_NDL.Order_ndl = String_Separator_To_Int(temp.Order)
+
+		for i := 1; i <= 6; i++ {
+			var lyr str.Layer
+
+			ly := "layer" + strconv.Itoa(i)
+
+			if i == 1 {
+
+				sqlStatement := "SELECT nama_layer,layer_detail,width,rm,diff,lyr,ink,adh FROM " + ly + " WHERE ws_no=?"
+
+				_ = con.QueryRow(sqlStatement, Rd_NDL.Ws_no).Scan(&lyr.Nama_layer, &lyr.Layer_datail, &lyr.Width_layer, &lyr.Rm_layer, &lyr.Diff_layer,
+					&lyr.Lyr_layer, &Rd_NDL.Ink_layer, &lyr.Adh_layer)
+
+				Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
+
+				ld := String_Separator_To_String(lyr.Layer_datail)
+
+				Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
+				Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
+
+				ld[2] = string(ld[2][len(ld[2])-1])
+				fmt.Println(ld[2])
+
+				Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
+				Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
+
+				Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+				Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+				Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+				Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+				Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+
+			} else if i == 6 {
+				sqlStatement := "SELECT nama_layer,layer_detail,width,rm,diff,lyr FROM " + ly + " WHERE ws_no=?"
+
+				_ = con.QueryRow(sqlStatement, Rd_NDL.Ws_no).Scan(&lyr.Nama_layer, &lyr.Layer_datail, &lyr.Width_layer, &lyr.Rm_layer, &lyr.Diff_layer,
+					&lyr.Lyr_layer)
+
+				if lyr.Nama_layer != "" {
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
+
+					ld := String_Separator_To_String(lyr.Layer_datail)
+
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
+
+					ld[2] = string(ld[2][len(ld[2])-1])
+					fmt.Println(ld[2])
+
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
+
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+				}
+			} else {
+				sqlStatement := "SELECT nama_layer,layer_detail,width,rm,diff,lyr,adh FROM " + ly + " WHERE ws_no=?"
+
+				_ = con.QueryRow(sqlStatement, Rd_NDL.Ws_no).Scan(&lyr.Nama_layer, &lyr.Layer_datail, &lyr.Width_layer, &lyr.Rm_layer, &lyr.Diff_layer,
+					&lyr.Lyr_layer, &lyr.Adh_layer)
+
+				fmt.Println("ly ", ly)
+				fmt.Println("nama: ", lyr.Nama_layer)
+
+				if lyr.Nama_layer != "" {
+
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
+
+					ld := String_Separator_To_String(lyr.Layer_datail)
+
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
+
+					ld[2] = string(ld[2][len(ld[2])-1])
+					fmt.Println(ld[2])
+
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
+
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+					Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+				}
+			}
+		}
+
+		arr_Read_NDL = append(arr_Read_NDL, Rd_NDL)
 	}
 
-	if arr_invent == nil {
+	if arr_Read_NDL == nil {
 		res.Status = http.StatusNotFound
 		res.Message = "Not Found"
-		res.Data = arr_invent
+		res.Data = arr_Read_NDL
 	} else {
 		res.Status = http.StatusOK
 		res.Message = "Sukses"
-		res.Data = arr_invent
+		res.Data = arr_Read_NDL
 	}
 
 	return res, nil
-}*/
+}
 
 func Update_Stock(kode_inventory string, nama_barang string, jumlah_barang float64, harga_barang int, satuan_barang string) (Response, error) {
 	var res Response
