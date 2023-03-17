@@ -17,6 +17,7 @@ func Init() *echo.Echo {
 	})
 
 	NDL := e.Group("/NDL")
+	Rekap := e.Group("/Rekap")
 
 	//NDL
 	NDL.POST("/read-excel", controllers.ReadEXCEL)
@@ -24,6 +25,9 @@ func Init() *echo.Echo {
 	NDL.POST("/input-ndl", controllers.InputNDL)
 
 	NDL.GET("/NDL", controllers.ReadNDL)
+
+	//Rekap
+	Rekap.GET("/Rekap", controllers.ReadRekap)
 
 	return e
 }

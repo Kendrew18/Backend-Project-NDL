@@ -740,7 +740,7 @@ func Input_NDL(stat string) (Response, error) {
 
 							if fl_lyr[0][0] == '1' {
 
-								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,ink,adh) values(?,?,?,?,?,?,?,?,?)"
+								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,ink,adh,meter,kg,diff_price) values(?,?,?,?,?,?,?,?,?,?,?,?)"
 
 								stmt, err = con.Prepare(sqlStatement)
 
@@ -750,11 +750,11 @@ func Input_NDL(stat string) (Response, error) {
 
 								ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
 
-								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9], fl_lyr[10])
+								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9], fl_lyr[10], 0.0, 0.0, 0.0)
 
 							} else if fl_lyr[0][0] == '6' {
 
-								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr) values(?,?,?,?,?,?,?)"
+								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,meter,kg,diff_price) values(?,?,?,?,?,?,?,?,?,?)"
 
 								stmt, err = con.Prepare(sqlStatement)
 
@@ -764,11 +764,11 @@ func Input_NDL(stat string) (Response, error) {
 
 								ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
 
-								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8])
+								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], 0.0, 0.0, 0.0)
 
 							} else {
 
-								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,adh) values(?,?,?,?,?,?,?,?)"
+								sqlStatement = "INSERT INTO " + db_lyr + " (ws_no,nama_layer,layer_detail,width,rm,diff,lyr,adh,meter,kg,diff_price) values(?,?,?,?,?,?,?,?,?,?,?)"
 
 								stmt, err = con.Prepare(sqlStatement)
 
@@ -778,7 +778,7 @@ func Input_NDL(stat string) (Response, error) {
 
 								ld := "|" + fl_lyr[1] + "|" + "|" + fl_lyr[2] + "|" + "|" + fl_lyr[3] + "|" + "|" + fl_lyr[4] + "|"
 
-								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9])
+								_, err = stmt.Exec(data2[8], fl_lyr[0], ld, fl_lyr[5], fl_lyr[6], fl_lyr[7], fl_lyr[8], fl_lyr[9], 0.0, 0.0, 0.0)
 
 							}
 						}
@@ -853,7 +853,7 @@ func Read_NDL(page int) (Response, error) {
 
 	offset := (limit * page) - limit
 
-	sqlStatement := "SELECT * FROM ndl_table ORDER BY ws_no ASC LIMIT ? OFFSET ?"
+	sqlStatement := "SELECT ws_no,tambah_data_tanggal,customer_delivery_date,job_done,durasi,analyzer_version,order_status,cylinder_status,gol,cust,item_name,model,up,repeat_ndl,toleransi,order_ndl,w_s_order,width,lenght_ndl,gusset,prod_size,w,c_ndl,color,total FROM ndl_table ORDER BY co ASC LIMIT ? OFFSET ?"
 
 	rows, err := con.Query(sqlStatement, limit, offset)
 
@@ -876,6 +876,17 @@ func Read_NDL(page int) (Response, error) {
 		if err != nil {
 			return res, err
 		}
+
+		date, _ := time.Parse("2006-01-02", Rd_NDL.Tambah_data_tanggal)
+		date_sql := date.Format("02-01-2006")
+		date2, _ := time.Parse("2006-01-02", Rd_NDL.Customer_delivery_date)
+		date_sql2 := date2.Format("02-01-2006")
+		date3, _ := time.Parse("2006-01-02", Rd_NDL.Job_done)
+		date_sql3 := date3.Format("02-01-2006")
+
+		Rd_NDL.Tambah_data_tanggal = date_sql
+		Rd_NDL.Customer_delivery_date = date_sql2
+		Rd_NDL.Job_done = date_sql3
 
 		Rd_NDL.Order_ndl = String_Separator_To_Int(temp.Order)
 
