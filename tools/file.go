@@ -39,14 +39,12 @@ func ReadFile(path string) []byte {
 		if n == 0 {
 			break
 		}
-		fmt.Println(text)
 	}
 	if isError(err) {
 		return nil
 	}
 
 	fmt.Println("==> file berhasil dibaca")
-	fmt.Println(text)
 	return text
 }
 

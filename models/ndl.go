@@ -716,7 +716,7 @@ func Input_NDL(stat string) (Response, error) {
 							gl_rkp = "LTU"
 						}
 
-						sqlStatement = "INSERT INTO rekap (ws_no,date_rekap,customer_name,item_name,order_rekap,ws_meter,plant,delivery_period,status_rekap) values(?,?,?,?,?,?,?,?,?)"
+						sqlStatement = "INSERT INTO rekap (ws_no,date_rekap,customer_name,item_name,order_rekap,ws_meter,plant,delivery_period,status_rekap,comment_note) values(?,?,?,?,?,?,?,?,?,?)"
 
 						stmt, err = con.Prepare(sqlStatement)
 
@@ -726,7 +726,7 @@ func Input_NDL(stat string) (Response, error) {
 
 						ord := String_Separator_To_Int(data2[15])
 
-						_, err = stmt.Exec(data2[8], date_sql, data2[9], data2[10], ord[1], data2[17], gl_rkp, "", 0)
+						_, err = stmt.Exec(data2[8], date_sql, data2[9], data2[10], ord[1], data2[17], gl_rkp, "", 0, "")
 
 						if err != nil {
 							return res, err
@@ -784,7 +784,7 @@ func Input_NDL(stat string) (Response, error) {
 						}
 
 						//template
-						sqlStatement = "INSERT INTO template (ws_no,date_template,internal_instruction_number,customer_name,item_name,material,quantity,quantity_status,delivery_period) values(?,?,?,?,?,?,?,?,?)"
+						sqlStatement = "INSERT INTO template (ws_no,date_template,internal_instruction_number,customer_name,item_name,material,quantity,quantity_status,delivery_period,ld1,ld3,meter,kg,price_kg,lyr) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
 						stmt, err = con.Prepare(sqlStatement)
 
@@ -795,29 +795,54 @@ func Input_NDL(stat string) (Response, error) {
 						dlr := ""
 
 						cnt := 0
+						ld1 := ""
+						ld3 := ""
+						kg := ""
+						prc := ""
+						lyr_str := ""
 						for x := 1; x <= 6; x++ {
 							var dl str.Detail_layer
 
 							ly := "layer" + strconv.Itoa(x)
 
-							sqlStatement := "SELECT layer_detail FROM " + ly + " WHERE ws_no=?"
+							sqlStatement := "SELECT layer_detail,width,lyr FROM " + ly + " WHERE ws_no=?"
 
-							_ = con.QueryRow(sqlStatement, data2[8]).Scan(&dl.Detail_layer)
+							_ = con.QueryRow(sqlStatement, data2[8]).Scan(&dl.Detail_layer, &dl.Width, &dl.Lyr)
 
 							if dl.Detail_layer != "" {
-								cnt++
-								if cnt > 1 {
-									spt := String_Separator_To_String(dl.Detail_layer)
+								lyr_str = lyr_str + "|" + strconv.Itoa(x) + "|"
+								spt := String_Separator_To_String(dl.Detail_layer)
+
+								if cnt < 1 {
 									dlr += spt[0]
+									cnt++
 								} else {
-									spt := String_Separator_To_String(dl.Detail_layer)
 									dlr = dlr + "/" + spt[0]
 								}
+
+								fix := "|" + spt[0] + "|"
+								ld1 += fix
+								tmp := dl.Width * 1000.0
+								fx := ""
+
+								if x == 1 {
+									fx = "|('W) " + strconv.FormatFloat(tmp, 'f', -1, 64) + "|"
+								} else {
+									fx = "|" + strconv.FormatFloat(tmp, 'f', -1, 64) + " x " + spt[1] + "|"
+								}
+
+								lyr_d := "|" + strconv.FormatFloat(dl.Lyr, 'f', -1, 64) + "|"
+								kg += lyr_d
+
+								ld3 += fx
+
+								prc += "|0|"
+
 							}
 
 						}
 
-						_, err = stmt.Exec(data2[8], date_sql, 0, data2[9], data2[10], dlr, ord[1], "roll/pcs", "")
+						_, err = stmt.Exec(data2[8], date_sql, 0, data2[9], data2[10], dlr, ord[1], "roll/pcs", "", ld1, ld3, data2[17], kg, prc)
 
 						stmt.Close()
 					}

@@ -75,3 +75,38 @@ func Read_Rekap(page int) (Response, error) {
 
 	return res, nil
 }
+
+func Update_Status_Rekap(ws_no string, status_rekap int) (Response, error) {
+	var res Response
+	con := db.CreateCon()
+
+	sqlstatement := "UPDATE rekap SET status_rekap=? WHERE ws_no=?"
+
+	stmt, err := con.Prepare(sqlstatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	result, err := stmt.Exec(status_rekap, ws_no)
+
+	if err != nil {
+		return res, err
+	}
+
+	rowschanged, err := result.RowsAffected()
+
+	if err != nil {
+		return res, err
+	}
+
+	stmt.Close()
+
+	res.Status = http.StatusOK
+	res.Message = "Suksess"
+	res.Data = map[string]int64{
+		"rows": rowschanged,
+	}
+
+	return res, nil
+}
