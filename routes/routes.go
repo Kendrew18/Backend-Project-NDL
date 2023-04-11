@@ -27,6 +27,8 @@ func Init() *echo.Echo {
 
 	NDL.GET("/NDL", controllers.ReadNDL)
 
+	NDL.GET("/page-ndl", controllers.PageNo)
+
 	//Rekap
 	Rekap.GET("/Rekap", controllers.ReadRekap)
 
@@ -34,6 +36,10 @@ func Init() *echo.Echo {
 
 	//PO-supplier
 	PO.POST("/input-PO-supplier", controllers.InputPOsupplier)
+
+	PO.GET("/read-PO", controllers.ReadPO)
+
+	PO.GET("/read-layer-PO", controllers.LyrPO)
 
 	return e
 }

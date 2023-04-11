@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -168,30 +169,37 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 			R_NDL.Order_ndl = append(R_NDL.Order_ndl, ORDER2)
 
 			R_NDL.W_s_order, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("R%d", i)), 64)
+			R_NDL.W_s_order = math.Round(R_NDL.W_s_order*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.W_s_order) + "|"
 			fl += tmp
 
 			R_NDL.Width, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("S%d", i)), 64)
+			R_NDL.Width = math.Round(R_NDL.Width*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.Width) + "|"
 			fl += tmp
 
 			R_NDL.Lenght, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("T%d", i)), 64)
+			R_NDL.Lenght = math.Round(R_NDL.Lenght*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.Lenght) + "|"
 			fl += tmp
 
 			R_NDL.Gusset, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("U%d", i)), 64)
+			R_NDL.Gusset = math.Round(R_NDL.Gusset*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.Gusset) + "|"
 			fl += tmp
 
 			R_NDL.Prod_size, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("V%d", i)), 64)
+			R_NDL.Prod_size = math.Round(R_NDL.Prod_size*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.Prod_size) + "|"
 			fl += tmp
 
 			R_NDL.W, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("W%d", i)), 64)
+			R_NDL.W = math.Round(R_NDL.W*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.W) + "|"
 			fl += tmp
 
 			R_NDL.C, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("X%d", i)), 64)
+			R_NDL.C = math.Round(R_NDL.C*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.C) + "|"
 			fl += tmp
 
@@ -200,6 +208,7 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 			fl += tmp
 
 			R_NDL.Total_layer, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("CB%d", i)), 64)
+			R_NDL.Total_layer = math.Round(R_NDL.Total_layer*100) / 100
 			tmp = "|" + fmt.Sprintf("%f", R_NDL.Total_layer) + "|"
 			fl += tmp
 
@@ -218,7 +227,9 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AA%d", i))
 				LD3 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AB%d", i))
-				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AC%d", i))
+				LD4_dbl, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AC%d", i)), 64)
+				LD4_dbl = math.Round(LD4_dbl*100) / 100
+				LD4 := fmt.Sprintf("%.2f", LD4_dbl)
 
 				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
 				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
@@ -238,6 +249,7 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				lyr_fl += tmp
 
 				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AD%d", i)), 64)
+				WD = math.Round(WD*100) / 100
 				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
 				tmp = "?" + fmt.Sprintf("%f", WD) + "?"
 				lyr_fl += tmp
@@ -248,20 +260,24 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				lyr_fl += tmp
 
 				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AF%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
 				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
 				tmp = "?" + fmt.Sprintf("%f", DIFF) + "?"
 				lyr_fl += tmp
 
 				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BP%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
 				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 				tmp = "?" + fmt.Sprintf("%f", LYR) + "?"
 				lyr_fl += tmp
 
 				R_NDL.Ink_layer, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BQ%d", i)), 64)
+				R_NDL.Ink_layer = math.Round(R_NDL.Ink_layer*100) / 100
 				tmp = "?" + fmt.Sprintf("%f", R_NDL.Ink_layer) + "?"
 				lyr_fl += tmp
 
 				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BR%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
 				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 				tmp = "?" + fmt.Sprintf("%f", ADH) + "?"
 				lyr_fl += tmp
@@ -269,6 +285,36 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				lyr_fl += "]|"
 
 				fl += lyr_fl
+			} else {
+
+				NL := "1st Layer"
+				R_NDL.Nama_layer = append(R_NDL.Nama_layer, NL)
+
+				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AA%d", i))
+				LD3 := ""
+				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AC%d", i))
+
+				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
+				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
+				R_NDL.Layer_datail_3 = append(R_NDL.Layer_datail_3, LD3)
+				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
+
+				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AD%d", i)), 64)
+				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
+
+				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AE%d", i)))
+				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
+
+				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AF%d", i)), 64)
+				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
+
+				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BP%d", i)), 64)
+				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
+
+				R_NDL.Ink_layer, _ = strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BQ%d", i)), 64)
+
+				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BR%d", i)), 64)
+				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 			}
 
 			//Layer2
@@ -281,7 +327,9 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AH%d", i))
 				LD3 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AI%d", i))
-				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AJ%d", i))
+				LD4_dbl, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AJ%d", i)), 64)
+				LD4_dbl = math.Round(LD4_dbl*100) / 100
+				LD4 := fmt.Sprintf("%.2f", LD4_dbl)
 
 				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
 				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
@@ -289,18 +337,22 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
 
 				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AK%d", i)), 64)
+				WD = math.Round(WD*100) / 100
 				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
 
 				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AL%d", i)))
 				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
 
 				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AM%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
 				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
 
 				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BS%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
 				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 
 				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BT%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
 				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 
 				tmp = "?" + NL + "?"
@@ -336,6 +388,38 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				lyr_fl += "]|"
 
 				fl += lyr_fl
+			} else {
+
+				NL := "2nd Layer"
+				R_NDL.Nama_layer = append(R_NDL.Nama_layer, NL)
+
+				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AH%d", i))
+				LD3 := ""
+				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AJ%d", i))
+
+				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
+				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
+				R_NDL.Layer_datail_3 = append(R_NDL.Layer_datail_3, LD3)
+				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
+
+				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AK%d", i)), 64)
+				WD = math.Round(WD*100) / 100
+				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
+
+				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AL%d", i)))
+				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
+
+				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AM%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
+				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
+
+				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BS%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
+				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
+
+				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BT%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
+				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 			}
 
 			//Layer3
@@ -347,7 +431,9 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AO%d", i))
 				LD3 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AP%d", i))
-				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AQ%d", i))
+				LD4_dbl, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AQ%d", i)), 64)
+				LD4_dbl = math.Round(LD4_dbl*100) / 100
+				LD4 := fmt.Sprintf("%.2f", LD4_dbl)
 
 				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
 				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
@@ -355,18 +441,22 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
 
 				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AR%d", i)), 64)
+				WD = math.Round(WD*100) / 100
 				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
 
 				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AS%d", i)))
 				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
 
 				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AT%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
 				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
 
 				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BU%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
 				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 
 				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BV%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
 				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 
 				tmp = "?" + NL + "?"
@@ -403,6 +493,37 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				fl += lyr_fl
 
+			} else {
+				NL := "3rd Layer"
+				R_NDL.Nama_layer = append(R_NDL.Nama_layer, NL)
+
+				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AO%d", i))
+				LD3 := ""
+				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AQ%d", i))
+
+				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
+				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
+				R_NDL.Layer_datail_3 = append(R_NDL.Layer_datail_3, LD3)
+				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
+
+				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AR%d", i)), 64)
+				WD = math.Round(WD*100) / 100
+				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
+
+				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AS%d", i)))
+				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
+
+				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AT%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
+				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
+
+				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BU%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
+				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
+
+				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BV%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
+				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 			}
 
 			//Layer4
@@ -414,7 +535,9 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AV%d", i))
 				LD3 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AW%d", i))
-				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AX%d", i))
+				LD4_dbl, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AX%d", i)), 64)
+				LD4_dbl = math.Round(LD4_dbl*100) / 100
+				LD4 := fmt.Sprintf("%.2f", LD4_dbl)
 
 				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
 				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
@@ -422,18 +545,22 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
 
 				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AY%d", i)), 64)
+				WD = math.Round(WD*100) / 100
 				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
 
 				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AZ%d", i)))
 				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
 
 				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BA%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
 				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
 
 				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BW%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
 				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 
 				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BX%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
 				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 
 				tmp = "?" + NL + "?"
@@ -469,6 +596,37 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				lyr_fl += "]|"
 
 				fl += lyr_fl
+			} else {
+				NL := "4th Layer"
+				R_NDL.Nama_layer = append(R_NDL.Nama_layer, NL)
+
+				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AV%d", i))
+				LD3 := ""
+				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AX%d", i))
+
+				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
+				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
+				R_NDL.Layer_datail_3 = append(R_NDL.Layer_datail_3, LD3)
+				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
+
+				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AY%d", i)), 64)
+				WD = math.Round(WD*100) / 100
+				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
+
+				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("AZ%d", i)))
+				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
+
+				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BA%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
+				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
+
+				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BW%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
+				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
+
+				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BX%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
+				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 			}
 
 			//Layer5
@@ -481,7 +639,9 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BC%d", i))
 				LD3 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BD%d", i))
-				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BE%d", i))
+				LD4_dbl, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BE%d", i)), 64)
+				LD4_dbl = math.Round(LD4_dbl*100) / 100
+				LD4 := fmt.Sprintf("%.2f", LD4_dbl)
 
 				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
 				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
@@ -489,18 +649,22 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
 
 				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BF%d", i)), 64)
+				WD = math.Round(WD*100) / 100
 				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
 
 				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BG%d", i)))
 				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
 
 				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BH%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
 				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
 
 				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BY%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
 				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 
 				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BZ%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
 				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 
 				tmp = "?" + NL + "?"
@@ -536,6 +700,37 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				lyr_fl += "]|"
 
 				fl += lyr_fl
+			} else {
+				NL := "5th Layer"
+				R_NDL.Nama_layer = append(R_NDL.Nama_layer, NL)
+
+				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BC%d", i))
+				LD3 := ""
+				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BE%d", i))
+
+				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
+				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
+				R_NDL.Layer_datail_3 = append(R_NDL.Layer_datail_3, LD3)
+				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
+
+				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BF%d", i)), 64)
+				WD = math.Round(WD*100) / 100
+				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
+
+				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BG%d", i)))
+				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
+
+				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BH%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
+				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
+
+				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BY%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
+				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
+
+				ADH, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BZ%d", i)), 64)
+				ADH = math.Round(ADH*100) / 100
+				R_NDL.Adh_layer = append(R_NDL.Adh_layer, ADH)
 			}
 
 			//Layer6
@@ -548,7 +743,9 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BJ%d", i))
 				LD3 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BK%d", i))
-				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BL%d", i))
+				LD4_dbl, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BL%d", i)), 64)
+				LD4_dbl = math.Round(LD4_dbl*100) / 100
+				LD4 := fmt.Sprintf("%.2f", LD4_dbl)
 
 				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
 				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
@@ -556,15 +753,18 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
 
 				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BM%d", i)), 64)
+				WD = math.Round(WD*100) / 100
 				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
 
 				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BN%d", i)))
 				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
 
 				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BO%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
 				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
 
 				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("CA%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
 				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 
 				tmp = "?" + NL + "?"
@@ -598,6 +798,33 @@ func Read_EXCEL(writer http.ResponseWriter, request *http.Request) (Response, er
 
 				fl += lyr_fl
 
+			} else {
+				NL := "6th Layer"
+				R_NDL.Nama_layer = append(R_NDL.Nama_layer, NL)
+
+				LD2 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BJ%d", i))
+				LD3 := ""
+				LD4 := xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BL%d", i))
+
+				R_NDL.Layer_datail_1 = append(R_NDL.Layer_datail_1, LD1)
+				R_NDL.Layer_datail_2 = append(R_NDL.Layer_datail_2, LD2)
+				R_NDL.Layer_datail_3 = append(R_NDL.Layer_datail_3, LD3)
+				R_NDL.Layer_datail_4 = append(R_NDL.Layer_datail_4, LD4)
+
+				WD, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BM%d", i)), 64)
+				WD = math.Round(WD*100) / 100
+				R_NDL.Width_layer = append(R_NDL.Width_layer, WD)
+
+				RM, _ := strconv.Atoi(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BN%d", i)))
+				R_NDL.Rm_layer = append(R_NDL.Rm_layer, RM)
+
+				DIFF, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("BO%d", i)), 64)
+				DIFF = math.Round(DIFF*100) / 100
+				R_NDL.Diff_layer = append(R_NDL.Diff_layer, DIFF)
+
+				LYR, _ := strconv.ParseFloat(xlsx.GetCellValue(sheet1Name, fmt.Sprintf("CA%d", i)), 64)
+				LYR = math.Round(LYR*100) / 100
+				R_NDL.Lyr_layer = append(R_NDL.Lyr_layer, LYR)
 			}
 
 			fl += "}"
@@ -1125,6 +1352,44 @@ func Update_Stock(kode_inventory string, nama_barang string, jumlah_barang float
 	res.Message = "Suksess"
 	res.Data = map[string]int64{
 		"rows": rowschanged,
+	}
+
+	return res, nil
+}
+
+func Page() (Response, error) {
+	var res Response
+	var arr str.Page_no
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT COUNT(ws_no) FROM ndl_table"
+
+	err := con.QueryRow(sqlStatement).Scan(&arr.Page)
+
+	if err != nil {
+		return res, err
+	}
+
+	sisa := arr.Page % 50
+	page := 0
+
+	if sisa > 0 {
+		page = ((arr.Page - sisa) / 50) + 1
+	} else {
+		page = ((arr.Page - sisa) / 50)
+	}
+
+	arr.Page = page
+
+	if arr.Page == 0 {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+		res.Data = arr
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = arr
 	}
 
 	return res, nil
