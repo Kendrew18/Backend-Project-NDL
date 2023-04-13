@@ -43,18 +43,6 @@ func ReadNDL(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func ReadNDLwsno(c echo.Context) error {
-	ws_no := c.FormValue("ws_no")
-
-	result, err := models.Read_NDL_WSNO(ws_no)
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
-	}
-
-	return c.JSON(http.StatusOK, result)
-}
-
 func UpdateNDL(c echo.Context) error {
 	ws_no := c.FormValue("ws_no")
 	tambah_data_tanggal := c.FormValue("tambah_data_tanggal")
@@ -105,6 +93,18 @@ func UpdateNDL(c echo.Context) error {
 
 func PageNo(c echo.Context) error {
 	result, err := models.Page()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+func ReadNDLwsno(c echo.Context) error {
+	ws_no := c.FormValue("ws_no")
+
+	result, err := models.Read_NDL_WSNO(ws_no)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
