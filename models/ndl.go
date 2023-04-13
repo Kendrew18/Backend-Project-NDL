@@ -1322,11 +1322,182 @@ func Read_NDL(page int) (Response, error) {
 	return res, nil
 }
 
-func Update_Stock(kode_inventory string, nama_barang string, jumlah_barang float64, harga_barang int, satuan_barang string) (Response, error) {
+func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date string, job_done string,
+	analyzer_version string, order_status string, cylinder_status string, gol string, cust string,
+	item_name string, model string, up int, repeat_ndl int, toleransi int, order_ndl int,
+	width float64, length_ndl float64, gusset float64, W float64, c_ndl float64, color int,
+	layer string, detail_layer string) (Response, error) {
+
 	var res Response
 	con := db.CreateCon()
+	var dur str.Duration
 
-	sqlstatement := "UPDATE stock SET nama_barang=?,jumlah_barang=?,harga_barang=?,satuan_barang=? WHERE kode_stock=?"
+	date, _ := time.Parse("2-Jan-06", tambah_data_tanggal)
+	date_sql := date.Format("2006-01-02")
+
+	date2, _ := time.Parse("2-Jan-06", customer_delivery_date)
+	date_sql2 := date2.Format("2006-01-02")
+
+	date3, _ := time.Parse("2-Jan-06", job_done)
+	date_sql3 := date3.Format("2006-01-02")
+
+	sqlstatement := "SELECT datediff(" + "\"" + date_sql3 + "\" , " + "\"" + date_sql + "\")"
+
+	_ = con.QueryRow(sqlstatement).Scan(&dur.Duration)
+
+	order2 := order_ndl * ((100 + toleransi) / 100)
+
+	order_full := "|" + strconv.Itoa(order_ndl) + "|" + "|" + strconv.Itoa(order2) + "|"
+
+	w_s_order := length_ndl * float64(order2) / float64(up)
+	w_s_order = math.Round(w_s_order*100) / 100
+
+	prod_size := width * float64(up) * 2.0
+	prod_size = math.Round(prod_size*100) / 100
+
+	lyr_arr := String_Separator_To_String(layer)
+
+	detail_layer_arr := String_Separator_To_String(detail_layer)
+
+	co := 0
+	df := 0.0
+
+	var miu str.Miu
+
+	sqlstatement = "SELECT layer_detail FROM layer1 WHERE ws_no = ?"
+
+	_ = con.QueryRow(sqlstatement, WS_no).Scan(&miu.Miu)
+
+	total_all := 0.0
+
+	for i := 0; i < len(lyr_arr); i++ {
+
+		nLYR := "layer" + string(lyr_arr[i][len(lyr_arr[i])-1])
+
+		if i == 0 {
+
+			ld2, _ := strconv.ParseFloat(detail_layer_arr[co+1], 64)
+			ld2 = math.Round(ld2*100) / 100
+			ld4, _ := strconv.ParseFloat(detail_layer_arr[co+2], 64)
+			ld4 = math.Round(ld4*100) / 100
+			WDTH, _ := strconv.ParseFloat(detail_layer_arr[co+3], 64)
+			WDTH = math.Round(WDTH*100) / 100
+			RM, _ := strconv.ParseFloat(detail_layer_arr[co+4], 64)
+			RM = math.Round(RM*100) / 100
+			WDTH_after, _ := strconv.ParseFloat(detail_layer_arr[co+3+5], 64)
+			WDTH_after = math.Round(WDTH_after*100) / 100
+			df = RM - WDTH
+
+			lyr := ld2 * ld4 * WDTH * w_s_order / 1000
+			lyr = math.Round(lyr*100) / 100
+
+			ink := 0.5 * float64(color) * WDTH * w_s_order / 1000
+			ink = math.Round(ink*100) / 100
+
+			adh := 3.5 * w_s_order * WDTH_after / 1000
+			adh = math.Round(adh*100) / 100
+
+			total_all = total_all + lyr + ink + adh
+
+			ldet := "|" + detail_layer_arr[co] + "|" + "|" + detail_layer_arr[co+1] + "|" + "|" + miu.Miu + "|" + "|" + detail_layer_arr[co+2] + "|"
+
+			sqlstatement = "UPDATE " + nLYR + " SET layer_detail=?,width=?,rm=?,diff=?,lyr=?,ink=?,adh=? WHERE ws_no=?"
+
+			stmt, err := con.Prepare(sqlstatement)
+
+			if err != nil {
+				return res, err
+			}
+
+			_, err = stmt.Exec(ldet, width, int(RM), df, lyr, ink, adh, WS_no)
+
+			if err != nil {
+				return res, err
+			}
+
+		} else if i == 5 {
+
+			ld2, _ := strconv.ParseFloat(detail_layer_arr[co+1], 64)
+			ld2 = math.Round(ld2*100) / 100
+			ld4, _ := strconv.ParseFloat(detail_layer_arr[co+2], 64)
+			ld4 = math.Round(ld4*100) / 100
+			WDTH, _ := strconv.ParseFloat(detail_layer_arr[co+3], 64)
+			WDTH = math.Round(WDTH*100) / 100
+			RM, _ := strconv.ParseFloat(detail_layer_arr[co+4], 64)
+			RM = math.Round(RM*100) / 100
+
+			df = RM - WDTH
+
+			lyr := ld2 * ld4 * WDTH * w_s_order / 1000
+			lyr = math.Round(lyr*100) / 100
+
+			total_all = total_all + lyr
+
+			ldet := "|" + detail_layer_arr[co] + "|" + "|" + detail_layer_arr[co+1] + "|" + "|" + miu.Miu + "|" + "|" + detail_layer_arr[co+2] + "|"
+
+			sqlstatement = "UPDATE " + nLYR + " SET layer_detail=?,width=?,rm=?,diff=?,lyr=? WHERE ws_no=?"
+
+			stmt, err := con.Prepare(sqlstatement)
+
+			if err != nil {
+				return res, err
+			}
+
+			_, err = stmt.Exec(ldet, width, int(RM), df, lyr, WS_no)
+
+			if err != nil {
+				return res, err
+			}
+
+		} else {
+
+			ld2, _ := strconv.ParseFloat(detail_layer_arr[co+1], 64)
+			ld2 = math.Round(ld2*100) / 100
+			ld4, _ := strconv.ParseFloat(detail_layer_arr[co+2], 64)
+			ld4 = math.Round(ld4*100) / 100
+			WDTH, _ := strconv.ParseFloat(detail_layer_arr[co+3], 64)
+			WDTH = math.Round(WDTH*100) / 100
+			RM, _ := strconv.ParseFloat(detail_layer_arr[co+4], 64)
+			RM = math.Round(RM*100) / 100
+			WDTH_after, _ := strconv.ParseFloat(detail_layer_arr[co+3+5], 64)
+			WDTH_after = math.Round(WDTH_after*100) / 100
+
+			df = RM - WDTH
+
+			lyr := ld2 * ld4 * WDTH * w_s_order / 1000
+			lyr = math.Round(lyr*100) / 100
+
+			adh := 3.5 * w_s_order * WDTH_after / 1000
+			adh = math.Round(adh*100) / 100
+
+			total_all = total_all + lyr + adh
+
+			ldet := "|" + detail_layer_arr[co] + "|" + "|" + detail_layer_arr[co+1] + "|" + "|" + miu.Miu + "|" + "|" + detail_layer_arr[co+2] + "|"
+
+			sqlstatement = "UPDATE " + nLYR + " SET layer_detail=?,width=?,rm=?,diff=?,lyr=?,adh=? WHERE ws_no=?"
+
+			stmt, err := con.Prepare(sqlstatement)
+
+			if err != nil {
+				return res, err
+			}
+
+			_, err = stmt.Exec(ldet, width, int(RM), df, lyr, adh, WS_no)
+
+			if err != nil {
+				return res, err
+			}
+
+		}
+
+		co = co + 5
+	}
+
+	total_all = math.Round(total_all*100) / 100
+
+	sqlstatement = "UPDATE ndl_table SET tambah_data_tanggal=?,customer_delivery_date=?,job_done=?,durasi=?," +
+		"analyzer_version=?,order_status=?,cylinder_status=?,gol=?,cust=?,item_name=?,model=?,up=?,repeat_ndl=?," +
+		"toleransi=?,order_ndl=?,w_s_order=?,width=?,lenght_ndl=?,gusset=?,prod_size=?,w=?,c_ndl=?,color=?,total=? WHERE ws_no=?"
 
 	stmt, err := con.Prepare(sqlstatement)
 
@@ -1334,13 +1505,105 @@ func Update_Stock(kode_inventory string, nama_barang string, jumlah_barang float
 		return res, err
 	}
 
-	result, err := stmt.Exec(nama_barang, jumlah_barang, harga_barang, satuan_barang, kode_inventory)
+	result, err := stmt.Exec(date_sql, date_sql2, date_sql3, dur.Duration, analyzer_version, order_status,
+		cylinder_status, gol, cust, item_name, model, up, repeat_ndl, toleransi, order_full, w_s_order, width, length_ndl,
+		gusset, prod_size, W, c_ndl, color, total_all, WS_no)
 
 	if err != nil {
 		return res, err
 	}
 
 	rowschanged, err := result.RowsAffected()
+
+	if err != nil {
+		return res, err
+	}
+
+	//Rekap
+	gl_rkp := ""
+	if gol == "S" {
+		gl_rkp = "BBK"
+	} else {
+		gl_rkp = "LTU"
+	}
+
+	sqlstatement = "UPDATE rekap SET date_rekap=?,customer_name=?,item_name=?,order_rekap=?,ws_meter=?,plant=? WHERE ws_no=?"
+
+	stmt, err = con.Prepare(sqlstatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	_, err = stmt.Exec(tambah_data_tanggal, cust, item_name, order2, w_s_order, gl_rkp, WS_no)
+
+	if err != nil {
+		return res, err
+	}
+
+	//template
+
+	co = 0
+	ld3 := ""
+	ld1 := ""
+	material := ""
+	lyr := ""
+	cnt := 0
+	meter := ""
+	kg := ""
+
+	for i := 0; i < len(lyr_arr); i++ {
+
+		condt := string(lyr_arr[i][len(lyr_arr[i])-1])
+
+		condt_int, _ := strconv.Atoi(condt)
+		lyr = lyr + "|" + string(lyr_arr[i][len(lyr_arr[i])-1]) + "|"
+
+		ld1 = ld1 + "|" + detail_layer_arr[co] + "|"
+
+		if condt_int == 1 {
+			WDTH, _ := strconv.ParseFloat(detail_layer_arr[co+3], 64)
+			WDTH = math.Round(WDTH*100) / 100
+			WDTH = WDTH * 1000
+			ld3 = ld3 + "|('W) " + strconv.FormatFloat(WDTH, 'f', -1, 64) + "|"
+		} else {
+			WDTH, _ := strconv.ParseFloat(detail_layer_arr[co+3], 64)
+			WDTH = math.Round(WDTH*100) / 100
+			WDTH = WDTH * 1000
+			ld3 = ld3 + "|" + strconv.FormatFloat(WDTH, 'f', -1, 64) + " x " + detail_layer_arr[co+1] + "|"
+		}
+
+		if cnt < 1 {
+			material += detail_layer_arr[co]
+			cnt++
+		} else {
+			material = material + "/" + detail_layer_arr[co]
+		}
+
+		ld2, _ := strconv.ParseFloat(detail_layer_arr[co+1], 64)
+		ld2 = math.Round(ld2*100) / 100
+		ld4, _ := strconv.ParseFloat(detail_layer_arr[co+2], 64)
+		ld4 = math.Round(ld4*100) / 100
+		WDTH, _ := strconv.ParseFloat(detail_layer_arr[co+3], 64)
+		WDTH = math.Round(WDTH*100) / 100
+
+		lyr := ld2 * ld4 * WDTH * w_s_order / 1000
+		lyr = math.Round(lyr*100) / 100
+
+		meter = meter + "|" + strconv.FormatFloat(w_s_order, 'f', -1, 64) + "|"
+		kg = kg + "|" + strconv.FormatFloat(lyr, 'f', -1, 64) + "|"
+		co = co + 5
+	}
+
+	sqlstatement = "UPDATE template SET date_template=?,customer_name=?,item_name=?,material=?,quantity=?,ld1=?,ld3=?,meter=?,kg=?,lyr=? WHERE ws_no=?"
+
+	stmt, err = con.Prepare(sqlstatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	_, err = stmt.Exec(tambah_data_tanggal, cust, item_name, material, order2, ld1, ld3, meter, kg, lyr, WS_no)
 
 	if err != nil {
 		return res, err

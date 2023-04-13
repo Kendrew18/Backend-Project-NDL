@@ -76,11 +76,11 @@ func Read_Rekap(page int) (Response, error) {
 	return res, nil
 }
 
-func Update_Status_Rekap(ws_no string, status_rekap int) (Response, error) {
+func Update_Status_Rekap(ws_no string, status_rekap int, delivery_period string, comment string) (Response, error) {
 	var res Response
 	con := db.CreateCon()
 
-	sqlstatement := "UPDATE rekap SET status_rekap=? WHERE ws_no=?"
+	sqlstatement := "UPDATE rekap SET status_rekap=?, delivery_period=?, comment=? WHERE ws_no=?"
 
 	stmt, err := con.Prepare(sqlstatement)
 
@@ -88,13 +88,27 @@ func Update_Status_Rekap(ws_no string, status_rekap int) (Response, error) {
 		return res, err
 	}
 
-	result, err := stmt.Exec(status_rekap, ws_no)
+	result, err := stmt.Exec(status_rekap, delivery_period, comment, ws_no)
 
 	if err != nil {
 		return res, err
 	}
 
 	rowschanged, err := result.RowsAffected()
+
+	if err != nil {
+		return res, err
+	}
+
+	sqlstatement = "UPDATE template SET delivery_period=? WHERE ws_no=?"
+
+	stmt, err = con.Prepare(sqlstatement)
+
+	if err != nil {
+		return res, err
+	}
+
+	_, err = stmt.Exec(delivery_period, ws_no)
 
 	if err != nil {
 		return res, err

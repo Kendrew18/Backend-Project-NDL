@@ -24,10 +24,12 @@ func ReadRekap(c echo.Context) error {
 func UpdateStatusRekap(c echo.Context) error {
 	ws_no := c.FormValue("ws_no")
 	status_rekap := c.FormValue("status_rekap")
+	delivery_period := c.FormValue("delivery_period")
+	comment := c.FormValue("comment")
 
 	sr, _ := strconv.Atoi(status_rekap)
 
-	result, err := models.Update_Status_Rekap(ws_no, sr)
+	result, err := models.Update_Status_Rekap(ws_no, sr, delivery_period, comment)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})

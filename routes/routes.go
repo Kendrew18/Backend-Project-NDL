@@ -19,6 +19,7 @@ func Init() *echo.Echo {
 	NDL := e.Group("/NDL")
 	Rekap := e.Group("/Rekap")
 	PO := e.Group("/PO")
+	Template := e.Group("/Template")
 
 	//NDL
 	NDL.POST("/read-excel", controllers.ReadEXCEL)
@@ -28,6 +29,8 @@ func Init() *echo.Echo {
 	NDL.GET("/NDL", controllers.ReadNDL)
 
 	NDL.GET("/page-ndl", controllers.PageNo)
+
+	NDL.PUT("/update-ndl", controllers.UpdateNDL)
 
 	//Rekap
 	Rekap.GET("/Rekap", controllers.ReadRekap)
@@ -40,6 +43,9 @@ func Init() *echo.Echo {
 	PO.GET("/read-PO", controllers.ReadPO)
 
 	PO.GET("/read-layer-PO", controllers.LyrPO)
+
+	//Template
+	Template.PUT("/template-update", controllers.UpdateTemplate)
 
 	return e
 }

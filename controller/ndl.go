@@ -43,18 +43,46 @@ func ReadNDL(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func UpdateStock(c echo.Context) error {
-	kode_stock := c.FormValue("kode_stock")
-	nama_barang := c.FormValue("nama_barang")
-	jumlah_barang := c.FormValue("jumlah_barang")
-	harga_barang := c.FormValue("harga_barang")
-	satuan_barang := c.FormValue("satuan_barang")
+func UpdateNDL(c echo.Context) error {
+	ws_no := c.FormValue("ws_no")
+	tambah_data_tanggal := c.FormValue("tambah_data_tanggal")
+	customer_delivery_date := c.FormValue("customer_delivery_date")
+	job_done := c.FormValue("job_done")
+	analyzer_version := c.FormValue("analyzer_version")
+	order_status := c.FormValue("order_status")
+	cylinder_status := c.FormValue("cylinder_status")
+	gol := c.FormValue("gol")
+	cust := c.FormValue("cust")
+	item_name := c.FormValue("item_name")
+	model := c.FormValue("model")
+	up := c.FormValue("up")
+	repeat_ndl := c.FormValue("repeat_ndl")
+	toleransi := c.FormValue("harga_barang")
+	order_ndl := c.FormValue("order_ndl")
+	width := c.FormValue("width")
+	length_ndl := c.FormValue("up")
+	gusset := c.FormValue("repeat_ndl")
+	W := c.FormValue("harga_barang")
+	c_ndl := c.FormValue("satuan_barang")
+	color := c.FormValue("color")
+	layer := c.FormValue("layer")
+	detail_layer := c.FormValue("detail_layer")
 
-	jb, _ := strconv.ParseFloat(jumlah_barang, 64)
+	width_D, _ := strconv.ParseFloat(width, 64)
+	lenght_D, _ := strconv.ParseFloat(length_ndl, 64)
+	gusset_D, _ := strconv.ParseFloat(gusset, 64)
+	w_D, _ := strconv.ParseFloat(W, 64)
+	c_D, _ := strconv.ParseFloat(c_ndl, 64)
 
-	hb, _ := strconv.Atoi(harga_barang)
+	up_i, _ := strconv.Atoi(up)
+	repeat_i, _ := strconv.Atoi(repeat_ndl)
+	toleransi_i, _ := strconv.Atoi(toleransi)
+	order_i, _ := strconv.Atoi(order_ndl)
+	color_i, _ := strconv.Atoi(color)
 
-	result, err := models.Update_Stock(kode_stock, nama_barang, jb, hb, satuan_barang)
+	result, err := models.Update_NDL(ws_no, tambah_data_tanggal, customer_delivery_date, job_done,
+		analyzer_version, order_status, cylinder_status, gol, cust, item_name, model, up_i,
+		repeat_i, toleransi_i, order_i, width_D, lenght_D, gusset_D, w_D, c_D, color_i, layer, detail_layer)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
