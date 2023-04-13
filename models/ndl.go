@@ -1657,3 +1657,226 @@ func Page() (Response, error) {
 
 	return res, nil
 }
+
+func Read_NDL_WSNO(ws_no string) (Response, error) {
+	var res Response
+	var arr_Read_NDL []str.Read_NDL
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT ws_no,tambah_data_tanggal,customer_delivery_date,job_done,durasi,analyzer_version,order_status,cylinder_status,gol,cust,item_name,model,up,repeat_ndl,toleransi,order_ndl,w_s_order,width,lenght_ndl,gusset,prod_size,w,c_ndl,color,total FROM ndl_table WHERE ws_no=?"
+
+	rows, err := con.Query(sqlStatement, ws_no)
+
+	defer rows.Close()
+
+	if err != nil {
+		return res, err
+	}
+
+	var temp str.Order
+
+	for rows.Next() {
+		var Rd_NDL str.Read_NDL
+		err = rows.Scan(&Rd_NDL.Ws_no, &Rd_NDL.Tambah_data_tanggal, &Rd_NDL.Customer_delivery_date,
+			&Rd_NDL.Job_done, &Rd_NDL.Durasi, &Rd_NDL.Analyzer_version, &Rd_NDL.Order_status,
+			&Rd_NDL.Cylider_status, &Rd_NDL.Gol, &Rd_NDL.Cust, &Rd_NDL.Item_name, &Rd_NDL.Model, &Rd_NDL.Up,
+			&Rd_NDL.Repeat_ndl, &Rd_NDL.Toleransi, &temp.Order, &Rd_NDL.W_s_order, &Rd_NDL.Width,
+			&Rd_NDL.Lenght, &Rd_NDL.Gusset, &Rd_NDL.Prod_size, &Rd_NDL.W, &Rd_NDL.C, &Rd_NDL.Color,
+			&Rd_NDL.Total_layer)
+		if err != nil {
+			return res, err
+		}
+
+		date, _ := time.Parse("2006-01-02", Rd_NDL.Tambah_data_tanggal)
+		date_sql := date.Format("02-01-2006")
+		date2, _ := time.Parse("2006-01-02", Rd_NDL.Customer_delivery_date)
+		date_sql2 := date2.Format("02-01-2006")
+		date3, _ := time.Parse("2006-01-02", Rd_NDL.Job_done)
+		date_sql3 := date3.Format("02-01-2006")
+
+		Rd_NDL.Tambah_data_tanggal = date_sql
+		Rd_NDL.Customer_delivery_date = date_sql2
+		Rd_NDL.Job_done = date_sql3
+
+		Rd_NDL.Order_ndl = String_Separator_To_Int(temp.Order)
+
+		for i := 1; i <= 6; i++ {
+			var lyr str.Layer
+
+			ly := "layer" + strconv.Itoa(i)
+
+			if i == 1 {
+
+				sqlStatement := "SELECT nama_layer,layer_detail,width,rm,diff,lyr,ink,adh FROM " + ly + " WHERE ws_no=?"
+
+				_ = con.QueryRow(sqlStatement, Rd_NDL.Ws_no).Scan(&lyr.Nama_layer, &lyr.Layer_datail, &lyr.Width_layer, &lyr.Rm_layer, &lyr.Diff_layer,
+					&lyr.Lyr_layer, &Rd_NDL.Ink_layer, &lyr.Adh_layer)
+
+				if lyr.Nama_layer != "" {
+
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
+
+					ld := String_Separator_To_String(lyr.Layer_datail)
+
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
+
+					ld[2] = string(ld[2][len(ld[2])-1])
+					fmt.Println(ld[2])
+
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
+
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+					Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+
+				} else {
+					nl := ""
+					nm := strconv.Itoa(i) + "nd Layer"
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, nm)
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, nl)
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, nl)
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, nl)
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, nl)
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+					Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+				}
+
+			} else if i == 6 {
+				sqlStatement := "SELECT nama_layer,layer_detail,width,rm,diff,lyr FROM " + ly + " WHERE ws_no=?"
+
+				_ = con.QueryRow(sqlStatement, Rd_NDL.Ws_no).Scan(&lyr.Nama_layer, &lyr.Layer_datail, &lyr.Width_layer, &lyr.Rm_layer, &lyr.Diff_layer,
+					&lyr.Lyr_layer)
+
+				if lyr.Nama_layer != "" {
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
+
+					ld := String_Separator_To_String(lyr.Layer_datail)
+
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
+
+					ld[2] = string(ld[2][len(ld[2])-1])
+					fmt.Println(ld[2])
+
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
+
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+				} else {
+					nl := ""
+					nm := strconv.Itoa(i) + "th Layer"
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, nm)
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, nl)
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, nl)
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, nl)
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, nl)
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+				}
+
+			} else {
+				sqlStatement := "SELECT nama_layer,layer_detail,width,rm,diff,lyr,adh FROM " + ly + " WHERE ws_no=?"
+
+				_ = con.QueryRow(sqlStatement, Rd_NDL.Ws_no).Scan(&lyr.Nama_layer, &lyr.Layer_datail, &lyr.Width_layer, &lyr.Rm_layer, &lyr.Diff_layer,
+					&lyr.Lyr_layer, &lyr.Adh_layer)
+
+				fmt.Println("ly ", ly)
+				fmt.Println("nama: ", lyr.Nama_layer)
+
+				if lyr.Nama_layer != "" {
+
+					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
+
+					ld := String_Separator_To_String(lyr.Layer_datail)
+
+					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
+					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
+
+					ld[2] = string(ld[2][len(ld[2])-1])
+					fmt.Println(ld[2])
+
+					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
+					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
+
+					Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+					Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+					Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+					Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+					Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+				} else {
+					nl := ""
+					if i == 2 {
+
+						nm := strconv.Itoa(i) + "nd Layer"
+						Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, nm)
+						Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, nl)
+						Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, nl)
+						Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, nl)
+						Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, nl)
+						Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+						Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+						Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+						Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+						Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+
+					} else if i == 3 {
+
+						nm := strconv.Itoa(i) + "rd Layer"
+						Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, nm)
+						Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, nl)
+						Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, nl)
+						Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, nl)
+						Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, nl)
+						Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+						Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+						Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+						Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+						Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+
+					} else {
+
+						nm := strconv.Itoa(i) + "th Layer"
+						Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, nm)
+						Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, nl)
+						Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, nl)
+						Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, nl)
+						Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, nl)
+						Rd_NDL.Width_layer = append(Rd_NDL.Width_layer, lyr.Width_layer)
+						Rd_NDL.Rm_layer = append(Rd_NDL.Rm_layer, lyr.Rm_layer)
+						Rd_NDL.Diff_layer = append(Rd_NDL.Diff_layer, lyr.Diff_layer)
+						Rd_NDL.Lyr_layer = append(Rd_NDL.Lyr_layer, lyr.Lyr_layer)
+						Rd_NDL.Adh_layer = append(Rd_NDL.Adh_layer, lyr.Adh_layer)
+
+					}
+				}
+			}
+		}
+
+		arr_Read_NDL = append(arr_Read_NDL, Rd_NDL)
+	}
+
+	if arr_Read_NDL == nil {
+		res.Status = http.StatusNotFound
+		res.Message = "Not Found"
+		res.Data = arr_Read_NDL
+	} else {
+		res.Status = http.StatusOK
+		res.Message = "Sukses"
+		res.Data = arr_Read_NDL
+	}
+
+	return res, nil
+}

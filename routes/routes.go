@@ -32,6 +32,8 @@ func Init() *echo.Echo {
 
 	NDL.PUT("/update-ndl", controllers.UpdateNDL)
 
+	NDL.GET("/Read-NDL-wsno", controllers.ReadNDLwsno)
+
 	//Rekap
 	Rekap.GET("/Rekap", controllers.ReadRekap)
 
