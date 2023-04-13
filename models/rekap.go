@@ -80,7 +80,7 @@ func Update_Status_Rekap(ws_no string, status_rekap int, delivery_period string,
 	var res Response
 	con := db.CreateCon()
 
-	sqlstatement := "UPDATE rekap SET status_rekap=?, delivery_period=?, comment=? WHERE ws_no=?"
+	sqlstatement := "UPDATE rekap SET status_rekap=?, delivery_period=?, comment_note=? WHERE ws_no=?"
 
 	stmt, err := con.Prepare(sqlstatement)
 
