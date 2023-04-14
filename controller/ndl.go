@@ -48,7 +48,6 @@ func UpdateNDL(c echo.Context) error {
 	tambah_data_tanggal := c.FormValue("tambah_data_tanggal")
 	customer_delivery_date := c.FormValue("customer_delivery_date")
 	job_done := c.FormValue("job_done")
-	analyzer_version := c.FormValue("analyzer_version")
 	order_status := c.FormValue("order_status")
 	cylinder_status := c.FormValue("cylinder_status")
 	gol := c.FormValue("gol")
@@ -59,30 +58,17 @@ func UpdateNDL(c echo.Context) error {
 	repeat_ndl := c.FormValue("repeat_ndl")
 	toleransi := c.FormValue("toleransi")
 	order_ndl := c.FormValue("order_ndl")
-	width := c.FormValue("width")
-	length_ndl := c.FormValue("length_ndl")
-	gusset := c.FormValue("gusset")
-	W := c.FormValue("w")
-	c_ndl := c.FormValue("c_ndl")
-	color := c.FormValue("color")
 	layer := c.FormValue("layer")
 	detail_layer := c.FormValue("detail_layer")
-
-	width_D, _ := strconv.ParseFloat(width, 64)
-	lenght_D, _ := strconv.ParseFloat(length_ndl, 64)
-	gusset_D, _ := strconv.ParseFloat(gusset, 64)
-	w_D, _ := strconv.ParseFloat(W, 64)
-	c_D, _ := strconv.ParseFloat(c_ndl, 64)
 
 	up_i, _ := strconv.Atoi(up)
 	repeat_i, _ := strconv.Atoi(repeat_ndl)
 	toleransi_i, _ := strconv.Atoi(toleransi)
 	order_i, _ := strconv.Atoi(order_ndl)
-	color_i, _ := strconv.Atoi(color)
 
 	result, err := models.Update_NDL(ws_no, tambah_data_tanggal, customer_delivery_date, job_done,
-		analyzer_version, order_status, cylinder_status, gol, cust, item_name, model, up_i,
-		repeat_i, toleransi_i, order_i, width_D, lenght_D, gusset_D, w_D, c_D, color_i, layer, detail_layer)
+		order_status, cylinder_status, gol, cust, item_name, model, up_i,
+		repeat_i, toleransi_i, order_i, layer, detail_layer)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})

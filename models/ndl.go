@@ -1323,14 +1323,18 @@ func Read_NDL(page int) (Response, error) {
 }
 
 func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date string, job_done string,
-	analyzer_version string, order_status string, cylinder_status string, gol string, cust string,
-	item_name string, model string, up int, repeat_ndl int, toleransi int, order_ndl int,
-	width float64, length_ndl float64, gusset float64, W float64, c_ndl float64, color int,
-	layer string, detail_layer string) (Response, error) {
+	order_status string, cylinder_status string, gol string, cust string, item_name string,
+	model string, up int, repeat_ndl int, toleransi int, order_ndl int, layer string, detail_layer string) (Response, error) {
 
 	var res Response
 	con := db.CreateCon()
 	var dur str.Duration
+
+	var WLC str.WLC
+
+	sqlstatement2 := "SELECT width,lenght_ndl,color FROM ndl_table WHERE ws_no=?"
+
+	_ = con.QueryRow(sqlstatement2, WS_no).Scan(&WLC.Width, &WLC.Lenght_ndl, &WLC.Color)
 
 	date, _ := time.Parse("2-Jan-06", tambah_data_tanggal)
 	date_sql := date.Format("2006-01-02")
@@ -1349,10 +1353,10 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 
 	order_full := "|" + strconv.Itoa(order_ndl) + "|" + "|" + strconv.Itoa(order2) + "|"
 
-	w_s_order := length_ndl * float64(order2) / float64(up)
+	w_s_order := WLC.Lenght_ndl * float64(order2) / float64(up)
 	w_s_order = math.Round(w_s_order*100) / 100
 
-	prod_size := width * float64(up) * 2.0
+	prod_size := WLC.Width * float64(up) * 2.0
 	prod_size = math.Round(prod_size*100) / 100
 
 	lyr_arr := String_Separator_To_String(layer)
@@ -1391,7 +1395,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 			lyr := ld2 * ld4 * WDTH * w_s_order / 1000
 			lyr = math.Round(lyr*100) / 100
 
-			ink := 0.5 * float64(color) * WDTH * w_s_order / 1000
+			ink := 0.5 * float64(WLC.Color) * WDTH * w_s_order / 1000
 			ink = math.Round(ink*100) / 100
 
 			adh := 3.5 * w_s_order * WDTH_after / 1000
@@ -1409,7 +1413,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 				return res, err
 			}
 
-			_, err = stmt.Exec(ldet, width, int(RM), df, lyr, ink, adh, WS_no)
+			_, err = stmt.Exec(ldet, WDTH, int(RM), df, lyr, ink, adh, WS_no)
 
 			if err != nil {
 				return res, err
@@ -1443,7 +1447,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 				return res, err
 			}
 
-			_, err = stmt.Exec(ldet, width, int(RM), df, lyr, WS_no)
+			_, err = stmt.Exec(ldet, WDTH, int(RM), df, lyr, WS_no)
 
 			if err != nil {
 				return res, err
@@ -1482,7 +1486,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 				return res, err
 			}
 
-			_, err = stmt.Exec(ldet, width, int(RM), df, lyr, adh, WS_no)
+			_, err = stmt.Exec(ldet, WDTH, int(RM), df, lyr, adh, WS_no)
 
 			if err != nil {
 				return res, err
@@ -1496,8 +1500,8 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 	total_all = math.Round(total_all*100) / 100
 
 	sqlstatement = "UPDATE ndl_table SET tambah_data_tanggal=?,customer_delivery_date=?,job_done=?,durasi=?," +
-		"analyzer_version=?,order_status=?,cylinder_status=?,gol=?,cust=?,item_name=?,model=?,up=?,repeat_ndl=?," +
-		"toleransi=?,order_ndl=?,w_s_order=?,width=?,lenght_ndl=?,gusset=?,prod_size=?,w=?,c_ndl=?,color=?,total=? WHERE ws_no=?"
+		"order_status=?,cylinder_status=?,gol=?,cust=?,item_name=?,model=?,up=?,repeat_ndl=?," +
+		"toleransi=?,order_ndl=?,w_s_order=?,prod_size=?,total=? WHERE ws_no=?"
 
 	stmt, err := con.Prepare(sqlstatement)
 
@@ -1505,9 +1509,9 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 		return res, err
 	}
 
-	result, err := stmt.Exec(date_sql, date_sql2, date_sql3, dur.Duration, analyzer_version, order_status,
-		cylinder_status, gol, cust, item_name, model, up, repeat_ndl, toleransi, order_full, w_s_order, width, length_ndl,
-		gusset, prod_size, W, c_ndl, color, total_all, WS_no)
+	result, err := stmt.Exec(date_sql, date_sql2, date_sql3, dur.Duration, order_status, cylinder_status,
+		gol, cust, item_name, model, up, repeat_ndl, toleransi, order_full, w_s_order, prod_size,
+		total_all, WS_no)
 
 	if err != nil {
 		return res, err
