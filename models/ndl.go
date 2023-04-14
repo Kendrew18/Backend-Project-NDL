@@ -1342,13 +1342,13 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 
 	_ = con.QueryRow(sqlstatement2, WS_no).Scan(&WLC.Width, &WLC.Lenght_ndl, &WLC.Color)
 
-	date, _ := time.Parse("02-01-06", tambah_data_tanggal)
+	date, _ := time.Parse("02-01-2006", tambah_data_tanggal)
 	date_sql := date.Format("2006-01-02")
 
-	date2, _ := time.Parse("02-01-06", customer_delivery_date)
+	date2, _ := time.Parse("02-01-2006", customer_delivery_date)
 	date_sql2 := date2.Format("2006-01-02")
 
-	date3, _ := time.Parse("02-01-06", job_done)
+	date3, _ := time.Parse("02-01-2006", job_done)
 	date_sql3 := date3.Format("2006-01-02")
 
 	sqlstatement := "SELECT datediff(" + "\"" + date_sql3 + "\" , " + "\"" + date_sql + "\")"
