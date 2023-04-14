@@ -1603,7 +1603,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 		lyr := ld2 * ld4 * WDTH * w_s_order / 1000
 		lyr = math.Round(lyr*100) / 100
 
-		meter = meter + "|" + strconv.FormatFloat(w_s_order, 'f', -1, 64) + "|"
+		meter = strconv.FormatFloat(w_s_order, 'f', -1, 64)
 		kg = kg + "|" + strconv.FormatFloat(lyr, 'f', -1, 64) + "|"
 		co = co + 5
 	}
