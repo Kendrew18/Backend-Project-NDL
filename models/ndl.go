@@ -1069,7 +1069,7 @@ func Input_NDL(stat string) (Response, error) {
 
 						}
 
-						_, err = stmt.Exec(data2[8], date_sql, 0, data2[9], data2[10], dlr, ord[1], "roll/pcs", "", ld1, ld3, data2[17], kg, prc)
+						_, err = stmt.Exec(data2[8], date_sql, 0, data2[9], data2[10], dlr, ord[1], "roll/pcs", "", ld1, ld3, data2[17], kg, prc, lyr_str)
 
 						stmt.Close()
 					}
@@ -1105,6 +1105,8 @@ func Read_NDL(page int) (Response, error) {
 
 	offset := (limit * page) - limit
 
+	fmt.Println("offset:", offset)
+
 	sqlStatement := "SELECT ws_no,tambah_data_tanggal,customer_delivery_date,job_done,durasi,analyzer_version,order_status,cylinder_status,gol,cust,item_name,model,up,repeat_ndl,toleransi,order_ndl,w_s_order,width,lenght_ndl,gusset,prod_size,w,c_ndl,color,total FROM ndl_table ORDER BY co ASC LIMIT ? OFFSET ?"
 
 	rows, err := con.Query(sqlStatement, limit, offset)
@@ -1118,6 +1120,7 @@ func Read_NDL(page int) (Response, error) {
 	var temp str.Order
 
 	for rows.Next() {
+		fmt.Println("masuk")
 		var Rd_NDL str.Read_NDL
 		err = rows.Scan(&Rd_NDL.Ws_no, &Rd_NDL.Tambah_data_tanggal, &Rd_NDL.Customer_delivery_date,
 			&Rd_NDL.Job_done, &Rd_NDL.Durasi, &Rd_NDL.Analyzer_version, &Rd_NDL.Order_status,
@@ -1128,6 +1131,8 @@ func Read_NDL(page int) (Response, error) {
 		if err != nil {
 			return res, err
 		}
+
+		fmt.Println(Rd_NDL)
 
 		date, _ := time.Parse("2006-01-02", Rd_NDL.Tambah_data_tanggal)
 		date_sql := date.Format("02-01-2006")
@@ -1142,6 +1147,7 @@ func Read_NDL(page int) (Response, error) {
 
 		Rd_NDL.Order_ndl = String_Separator_To_Int(temp.Order)
 
+		fmt.Println(Rd_NDL.Order_ndl)
 		for i := 1; i <= 6; i++ {
 			var lyr str.Layer
 
@@ -1159,12 +1165,13 @@ func Read_NDL(page int) (Response, error) {
 					Rd_NDL.Nama_layer = append(Rd_NDL.Nama_layer, lyr.Nama_layer)
 
 					ld := String_Separator_To_String(lyr.Layer_datail)
+					fmt.Println(string(ld[2][len(ld[2])-1]))
 
 					Rd_NDL.Layer_datail_1 = append(Rd_NDL.Layer_datail_1, ld[0])
 					Rd_NDL.Layer_datail_2 = append(Rd_NDL.Layer_datail_2, ld[1])
-
+					fmt.Println(ld[0], ld[1])
 					ld[2] = string(ld[2][len(ld[2])-1])
-					fmt.Println(ld[2])
+					fmt.Println("miu:", ld[2])
 
 					Rd_NDL.Layer_datail_3 = append(Rd_NDL.Layer_datail_3, ld[2])
 					Rd_NDL.Layer_datail_4 = append(Rd_NDL.Layer_datail_4, ld[3])
@@ -1305,7 +1312,6 @@ func Read_NDL(page int) (Response, error) {
 				}
 			}
 		}
-
 		arr_Read_NDL = append(arr_Read_NDL, Rd_NDL)
 	}
 
@@ -1336,13 +1342,13 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 
 	_ = con.QueryRow(sqlstatement2, WS_no).Scan(&WLC.Width, &WLC.Lenght_ndl, &WLC.Color)
 
-	date, _ := time.Parse("2-Jan-06", tambah_data_tanggal)
+	date, _ := time.Parse("02-01-06", tambah_data_tanggal)
 	date_sql := date.Format("2006-01-02")
 
-	date2, _ := time.Parse("2-Jan-06", customer_delivery_date)
+	date2, _ := time.Parse("02-01-06", customer_delivery_date)
 	date_sql2 := date2.Format("2006-01-02")
 
-	date3, _ := time.Parse("2-Jan-06", job_done)
+	date3, _ := time.Parse("02-01-06", job_done)
 	date_sql3 := date3.Format("2006-01-02")
 
 	sqlstatement := "SELECT datediff(" + "\"" + date_sql3 + "\" , " + "\"" + date_sql + "\")"
@@ -1371,6 +1377,9 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 	sqlstatement = "SELECT layer_detail FROM layer1 WHERE ws_no = ?"
 
 	_ = con.QueryRow(sqlstatement, WS_no).Scan(&miu.Miu)
+
+	ld_arr := String_Separator_To_String(miu.Miu)
+	miu.Miu = ld_arr[2]
 
 	total_all := 0.0
 
@@ -1539,7 +1548,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 		return res, err
 	}
 
-	_, err = stmt.Exec(tambah_data_tanggal, cust, item_name, order2, w_s_order, gl_rkp, WS_no)
+	_, err = stmt.Exec(date_sql, cust, item_name, order2, w_s_order, gl_rkp, WS_no)
 
 	if err != nil {
 		return res, err
@@ -1607,7 +1616,7 @@ func Update_NDL(WS_no string, tambah_data_tanggal string, customer_delivery_date
 		return res, err
 	}
 
-	_, err = stmt.Exec(tambah_data_tanggal, cust, item_name, material, order2, ld1, ld3, meter, kg, lyr, WS_no)
+	_, err = stmt.Exec(date_sql, cust, item_name, material, order2, ld1, ld3, meter, kg, lyr, WS_no)
 
 	if err != nil {
 		return res, err

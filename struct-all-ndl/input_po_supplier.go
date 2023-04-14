@@ -10,6 +10,7 @@ type Input_PO_Supplier struct {
 	Diff_Price       string `json:"diff_price"`
 	Total            string `json:"total"`
 	Outstanding      string `json:"outstanding"`
+	Lyr_tot_out      string `json:"lyr_tot_out"`
 }
 
 type Outstanding struct {

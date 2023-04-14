@@ -10,6 +10,7 @@ type Read_PO_supplier_str struct {
 	Diff_Price       string `json:"diff_price"`
 	Total            string `json:"total"`
 	Outstanding      string `json:"outstanding"`
+	Lyr_tot_out      string `json:"lyr_tot_out"`
 }
 
 type Read_PO_supplier_fix struct {

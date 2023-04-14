@@ -4,7 +4,6 @@ import (
 	"Backend-Project-NDL/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"strconv"
 )
 
 func InputPOsupplier(c echo.Context) error {
@@ -29,11 +28,8 @@ func InputPOsupplier(c echo.Context) error {
 func ReadPO(c echo.Context) error {
 	ws_no := c.FormValue("ws_no")
 	layer := c.FormValue("layer")
-	all_layer := c.FormValue("all_layer")
 
-	lyr, _ := strconv.Atoi(layer)
-
-	result, err := models.Read_PO(ws_no, lyr, all_layer)
+	result, err := models.Read_PO(ws_no, layer)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
